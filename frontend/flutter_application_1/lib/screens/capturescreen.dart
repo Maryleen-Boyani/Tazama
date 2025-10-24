@@ -63,7 +63,7 @@ class _CaptureScreenState extends State<CaptureScreen> {
       var response = await request.send();
       return response.statusCode == 200;
     } catch (e) {
-      print('Upload error: $e');
+      debugPrint('Upload error: $e');
       return false;
     }
   }
@@ -73,10 +73,10 @@ class _CaptureScreenState extends State<CaptureScreen> {
     try {
       if (await file.exists()) {
         await file.delete();
-        print('Temporary file deleted');
+        debugPrint('Temporary file deleted');
       }
     } catch (e) {
-      print('File deletion failed: $e');
+      debugPrint('File deletion failed: $e');
     }
   }
 

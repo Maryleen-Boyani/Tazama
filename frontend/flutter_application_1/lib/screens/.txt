@@ -1,0 +1,243 @@
+import 'package:flutter/material.dart';
+import 'widgets/curved_navbar.dart';
+
+void main() {
+  runApp(const TazamaApp());
+}
+
+class TazamaApp extends StatefulWidget {
+  const TazamaApp({super.key});
+
+  @override
+  State<TazamaApp> createState() => _TazamaAppState();
+}
+
+class _TazamaAppState extends State<TazamaApp> {
+  bool _isDarkMode = false;
+
+  void toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: _isDarkMode
+          ? ThemeData.dark().copyWith(
+              primaryColor: Colors.blue,
+              scaffoldBackgroundColor: const Color(0xFF121212),
+              appBarTheme: const AppBarTheme(backgroundColor: Colors.blue),
+            )
+          : ThemeData.light().copyWith(
+              primaryColor: Colors.blue,
+              scaffoldBackgroundColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+            ),
+      home: HomePage(isDarkMode: _isDarkMode, toggleTheme: toggleTheme),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  final bool isDarkMode;
+  final VoidCallback toggleTheme;
+
+  const HomePage({
+    super.key,
+    required this.isDarkMode,
+    required this.toggleTheme,
+  });
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool _showUploadUI = false;
+
+  void _onUploadPressed() {
+    setState(() {
+      _showUploadUI = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = widget.isDarkMode
+        ? Colors.white
+        : Colors.black87; // Dynamic text color
+
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: widget.isDarkMode ? Colors.white : Colors.white,
+          onPressed: () {
+            setState(() {
+              _showUploadUI = false;
+            });
+          },
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 15,
+              backgroundColor: Colors.white24,
+              child: Icon(Icons.remove_red_eye, color: Colors.white, size: 16),
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              "Tazama",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: Colors.white,
+            ),
+            onPressed: widget.toggleTheme,
+          ),
+        ],
+      ),
+
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        alignment: _showUploadUI ? Alignment.topCenter : Alignment.center,
+        child: Column(
+          mainAxisAlignment: _showUploadUI
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 16.0,
+              ),
+              decoration: BoxDecoration(
+                color: widget.isDarkMode
+                    ? Colors.blueGrey[900]
+                    : Colors.blue[50],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Welcome to Tazama",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Seeing Through Sound",
+                    style: TextStyle(
+                      fontSize: 18,
+                      // ignore: deprecated_member_use
+                      color: textColor.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            if (!_showUploadUI)
+              ElevatedButton(
+                onPressed: _onUploadPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                ),
+                child: const Text(
+                  "Upload Image",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: _onUploadPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+              ),
+              child: const Text(
+                "Upload Video",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            if (_showUploadUI) ...[
+              const SizedBox(height: 40),
+              Container(
+                width: double.infinity,
+                height: 140, // slightly smaller textbox
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: widget.isDarkMode
+                      ? Colors.blueGrey[800]
+                      : Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const TextField(
+                  maxLines: null,
+                  decoration: InputDecoration.collapsed(
+                    hintText: "Enter text to analyze...",
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              FloatingActionButton.extended(
+                onPressed: () {},
+                backgroundColor: theme.primaryColor,
+                label: const Text("Translate"),
+                icon: const Icon(Icons.translate),
+              ),
+            ],
+          ],
+        ),
+      ),
+
+      // ✅ Curved navigation bar — fixed visuals
+      bottomNavigationBar: TazamaNavBar(
+        index: 0,
+        onTap: (_) {},
+        isDarkMode: widget.isDarkMode,
+        showOnlyHome: true,
+      ),
+    );
+  }
+}
